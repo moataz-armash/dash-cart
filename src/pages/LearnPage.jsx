@@ -90,6 +90,9 @@ const LearnPage = () => {
             height: "100%",
             backgroundColor: "secondary.subMain",
             borderRadius: "21px",
+            border: 3,
+            borderColor: "primary.main",
+            borderRadius: "21px",
           }}>
           <Box
             sx={{
