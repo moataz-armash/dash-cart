@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-function MainCard({ children }) {
+function MainCard({ children, backgroundColor }) {
   return (
     <Box
       sx={{
@@ -8,7 +8,7 @@ function MainCard({ children }) {
         alignItems: "center",
         justifyContent: "center",
         height: "100vh",
-        backgroundColor: "primary.white",
+        backgroundColor: backgroundColor,
         padding: 2,
       }}>
       {children}

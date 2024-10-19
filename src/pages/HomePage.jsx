@@ -7,7 +7,7 @@ import MainCard from "../components/MainCard";
 import MainText from "../components/MainText";
 const HomePage = () => {
   return (
-    <MainCard>
+    <MainCard backgroundColor="white">
       <Box
         sx={{
           backgroundColor: "#E1C2E4",
@@ -27,6 +27,7 @@ const HomePage = () => {
           text="Weigh additional items in the cart"
           fontSize="h4"
           fontWeight="500"
+          color="text"
         />
 
         <Box
