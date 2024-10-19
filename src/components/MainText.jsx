@@ -1,5 +1,12 @@
 import { Typography } from "@mui/material";
-function MainCard({ fontSize, fontWeight, text }) {
+function MainText({
+  fontSize,
+  fontWeight,
+  text,
+  color,
+  marginBottom,
+  marginTop,
+}) {
   return (
     <Typography
       variant={fontSize}
@@ -7,12 +14,13 @@ function MainCard({ fontSize, fontWeight, text }) {
       gutterBottom
       sx={{
         fontWeight: { fontWeight },
-        color: "text",
-        marginTop: "8px",
+        color: color,
+        marginBottom: marginBottom,
+        marginTop: marginTop,
       }}>
       {text}
     </Typography>
   );
 }
 
-export default MainCard;
+export default MainText;

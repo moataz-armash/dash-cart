@@ -613,6 +613,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mui/icons-material@npm:^6.1.4":
+  version: 6.1.4
+  resolution: "@mui/icons-material@npm:6.1.4"
+  dependencies:
+    "@babel/runtime": ^7.25.7
+  peerDependencies:
+    "@mui/material": ^6.1.4
+    "@types/react": ^17.0.0 || ^18.0.0 || ^19.0.0
+    react: ^17.0.0 || ^18.0.0 || ^19.0.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  checksum: 9de4e83defdbe05656145dc30d18236020cdb43404df0b65539c8cc8d2c0112be3ae65d7cbe70bfe0690dda424294e89f327497a9b0e62395a01ab1c52a0d27b
+  languageName: node
+  linkType: hard
+
 "@mui/material@npm:^6.1.4":
   version: 6.1.4
   resolution: "@mui/material@npm:6.1.4"
@@ -1382,6 +1398,7 @@ __metadata:
   dependencies:
     "@emotion/react": ^11.13.3
     "@emotion/styled": ^11.13.0
+    "@mui/icons-material": ^6.1.4
     "@mui/material": ^6.1.4
     "@tauri-apps/api": ^2
     "@tauri-apps/cli": ^2

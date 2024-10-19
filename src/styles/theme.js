@@ -9,7 +9,8 @@ const theme = createTheme({
       white: "#ffffff",
     },
     secondary: {
-      main: "#37474f", // Your secondary color (e.g., dark grey from the text in the image)
+      main: "#568000", // Your secondary color (e.g., dark grey from the text in the image)
+      subMain: "#679900",
     },
     background: {
       default: "#f3e5f5", // Default background color
