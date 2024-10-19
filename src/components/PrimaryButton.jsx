@@ -1,8 +1,10 @@
 import { Button } from "@mui/material";
-
-function PrimaryButton({ name }) {
+import { Link } from "react-router-dom";
+function PrimaryButton({ name, path }) {
   return (
     <Button
+      component={Link}
+      to={path}
       variant="contained"
       size="large"
       sx={{
