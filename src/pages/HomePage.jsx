@@ -1,10 +1,10 @@
 // src/HomePage.js
 import React from "react";
 import { Box, Typography, Link } from "@mui/material";
-import cartImage from "./assets/cart-image.png";
-import PrimaryButton from "./components/PrimaryButton";
-import MainCard from "./components/MainCard";
-import MainText from "./components/MainText";
+import cartImage from "../assets/cart-image.png";
+import PrimaryButton from "../components/PrimaryButton";
+import MainCard from "../components/MainCard";
+import MainText from "../components/MainText";
 const HomePage = () => {
   return (
     <MainCard>
@@ -44,7 +44,7 @@ const HomePage = () => {
           }}
         />
       </Box>
-      <PrimaryButton name="Start shopping" />
+      <PrimaryButton name="Start shopping" path="/learn-page" />
       <Typography variant="body2" sx={{ color: "text", marginTop: "16px" }}>
         By using the Nane Dash Cart you are agreeing to our{" "}
         <Link
