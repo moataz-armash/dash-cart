@@ -5,6 +5,7 @@ import cartImage from "../assets/cart-image.png";
 import PrimaryButton from "../components/PrimaryButton";
 import MainCard from "../components/MainCard";
 import MainText from "../components/MainText";
+import AgreementText from "../components/AgreementText";
 const HomePage = () => {
   return (
     <MainCard backgroundColor="white">
@@ -46,18 +47,7 @@ const HomePage = () => {
         />
       </Box>
       <PrimaryButton name="Start shopping" path="/learn-page" />
-      <Typography variant="body2" sx={{ color: "text", marginTop: "16px" }}>
-        By using the Nane Dash Cart you are agreeing to our{" "}
-        <Link
-          href="#"
-          underline="hover"
-          sx={{
-            color: "primary",
-            textDecoration: "underline",
-          }}>
-          Terms & Conditions.
-        </Link>
-      </Typography>
+      <AgreementText marginTop="16px" />
     </MainCard>
   );
 };

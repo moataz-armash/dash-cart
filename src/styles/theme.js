@@ -11,6 +11,7 @@ const theme = createTheme({
     secondary: {
       main: "#568000", // Your secondary color (e.g., dark grey from the text in the image)
       subMain: "#679900",
+      cardColor: "#78B300",
     },
     background: {
       default: "#f3e5f5", // Default background color

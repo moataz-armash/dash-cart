@@ -3,6 +3,7 @@ import React from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import LearnPage from "./pages/LearnPage";
+import SigninPage from "./pages/SigninPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/learn-page" element={<LearnPage />} />
+          <Route path="/signin-page" element={<SigninPage />} />
           <Route path="*" element={<NotFoundPage />} /> 404 route
         </Routes>
       </Router>
