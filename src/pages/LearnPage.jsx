@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import PrimaryButton from "../components/PrimaryButton";
 import MainCard from "../components/MainCard";
+import SecondaryCard from "../components/SecondaryCard";
 import MainText from "../components/MainText";
 import learnHowToShop from "../assets/learn-how-to-shop.webp";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
@@ -22,15 +23,7 @@ const LearnPage = () => {
         color="white"
         marginBottom="48px"
       />
-      <Box
-        sx={{
-          width: "90%",
-          maxHeight: "50%",
-          display: "flex",
-          flex: 1,
-          flexDirection: "row",
-          justifyContent: "space-between",
-        }}>
+      <SecondaryCard maxHeight="50%">
         <Box
           sx={{
             position: "relative",
@@ -83,7 +76,7 @@ const LearnPage = () => {
         </Box>
         <Box
           component={Link}
-          to="signin-page"
+          to="/signin-page"
           sx={{
             position: "relative",
             width: "45%",
@@ -92,7 +85,6 @@ const LearnPage = () => {
             borderRadius: "21px",
             border: 3,
             borderColor: "primary.main",
-            borderRadius: "21px",
           }}>
           <Box
             sx={{
@@ -113,7 +105,7 @@ const LearnPage = () => {
             </Typography>
           </Box>
         </Box>
-      </Box>
+      </SecondaryCard>
       {/* <PrimaryButton name="(Test) back to home" path="/" /> */}
     </MainCard>
   );
