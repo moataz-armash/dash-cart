@@ -1,19 +1,21 @@
 import { Box } from "@mui/material";
-function MainCard({ children, maxHeight }) {
+function SecondaryCard({ children, maxHeight, padding, width,flexDirection,backgroundColor }) {
   return (
     <Box
       sx={{
-        width: "90%",
-        maxHeight: { maxHeight },
+        width: width,
+        maxHeight: maxHeight ,
         display: "flex",
         flex: 1,
-        flexDirection: "row",
+        flexDirection: flexDirection,
         justifyContent: "space-between",
-        // backgroundColor: "#000",
+        backgroundColor: backgroundColor,
+        borderRadius: "21px",
+        padding: padding,
       }}>
       {children}
     </Box>
   );
 }
 
-export default MainCard;
+export default SecondaryCard;

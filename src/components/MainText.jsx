@@ -13,10 +13,11 @@ function MainText({
       align="center"
       gutterBottom
       sx={{
-        fontWeight: { fontWeight },
+        fontWeight:  fontWeight ,
         color: color,
         marginBottom: marginBottom,
         marginTop: marginTop,
+       
       }}>
       {text}
     </Typography>
