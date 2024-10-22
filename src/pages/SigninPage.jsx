@@ -9,7 +9,7 @@ import AgreementText from "../components/AgreementText";
 const SigninPage = () => {
   return (
     <MainCard backgroundColor="white">
-      <SecondaryCard maxHeight="70%">
+      <SecondaryCard maxHeight="70%" width="90%">
         <Box
           sx={{
             width: "50%",
@@ -67,7 +67,7 @@ const SigninPage = () => {
 
           <Button
             component={Link}
-            to="/"
+            to="/phone-number-page"
             variant="contained"
             size="large"
             sx={{

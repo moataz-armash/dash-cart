@@ -23,7 +23,7 @@ const LearnPage = () => {
         color="white"
         marginBottom="48px"
       />
-      <SecondaryCard maxHeight="50%">
+      <SecondaryCard maxHeight="50%" width="90%">
         <Box
           sx={{
             position: "relative",
