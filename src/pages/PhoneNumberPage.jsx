@@ -1,18 +1,51 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import MainCard from "../components/MainCard";
 import SecondaryCard from "../components/SecondaryCard";
-import { Typography, Box, Button } from "@mui/material";
+import { Typography, Box, Button, TextField } from "@mui/material";
 import MainText from "../components/MainText";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from 'react-router-dom';
+import {sendOtpApi} from "../services/apiService"
+import { PhoneNumberContext } from "../contexts/PhoneNumberContext";
 
 function PhoneNumberPage() {
-  const [phone, setPhone] = useState("");
+  const { phoneNumber, setPhoneNumber } = useContext(PhoneNumberContext);
+  const [error, setError] = useState(''); 
+  const [isPhoneValid, setIsPhoneValid] = useState(true); 
 
-  const handleLogin = (e) => {
-    setPhone(e.value.target);
+  const navigate = useNavigate();
+
+  
+  const handlePhoneNumberChange = (value) => {
+    setPhoneNumber(value);
+    if (error) setError(''); 
+    setIsPhoneValid(true); 
   };
+
+  const validatePhoneNumber = () => {
+    if (phoneNumber.length < 12) {
+      setError('Please enter a valid phone number');
+      setIsPhoneValid(false); 
+      return false;
+    }
+    return true;
+  };
+
+  // Send OTP via the backend
+    const sendOtp = async () => {
+      if (!validatePhoneNumber()) {
+        return; 
+      }
+      try {
+        const data = await sendOtpApi(phoneNumber);
+        navigate('/otp-page');
+      } catch (error) {
+        console.error('Error sending OTP:', error);
+      }
+      console.log(phoneNumber);
+    };
+
   return (
     <MainCard backgroundColor="#EEEEEE">
       <SecondaryCard
@@ -52,10 +85,11 @@ function PhoneNumberPage() {
               paddingTop: "36px",
             }}
           >
+           
             <PhoneInput
-              country={"us"} // Default country
-              value={phone}
-              onChange={setPhone}
+              country={"tr"} // Default country
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
               inputProps={{
                 name: "Phone Number",
                 required: true,
@@ -70,13 +104,21 @@ function PhoneNumberPage() {
                 color: "#171717",
                 opacity: "70%",
               }}
+              isValid={isPhoneValid}
             />
+            {!isPhoneValid && (
+              <Typography
+                variant="body2"
+                sx={{ color: "red", fontWeight: "600", marginBottom: "10px" }}
+              >
+                {error}
+              </Typography>
+            )}
+
             <Button
-              component={Link}
-              to="/"
               variant="contained"
               color="primary"
-              onClick={handleLogin}
+              onClick={sendOtp}
               sx={{
                 width: "100%",
                 maxWidth: "300px",
@@ -104,7 +146,7 @@ function PhoneNumberPage() {
                 }}
               >
                 scanning
-              </Typography>{" "}
+              </Typography>
             </Typography>
           </Box>
         </Box>
