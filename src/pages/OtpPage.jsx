@@ -1,90 +1,85 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
-import { Box, Button, Typography, TextField, Grid2 } from '@mui/material';
-import axios from 'axios';
-import { PhoneNumberContext } from '../contexts/PhoneNumberContext';
-import { useNavigate } from 'react-router-dom'; // To navigate between pages
+import React, { useState, useRef, useEffect, useContext } from "react";
+import { Box, Button, Typography, TextField, Grid2 } from "@mui/material";
+import axios from "axios";
+import { PhoneNumberContext } from "../contexts/PhoneNumberContext";
+import { useNavigate } from "react-router-dom"; // To navigate between pages
 import mobileVerificationIicon from "../assets/mobileVerification-icon.png";
+import VirtualKeyboard from "../components/VirtualKeyboard";
 
 const OtpPage = () => {
   const { phoneNumber } = useContext(PhoneNumberContext);
-  const [otp, setOtp] = useState(new Array(6).fill("")); // State to store OTP digits
-  const inputRefs = useRef([]); // Store references to input fields
-  const navigate = useNavigate(); // React Router's navigate function
+  const [otp, setOtp] = useState(new Array(6).fill(""));
+  const inputRefs = useRef([]);
+  const navigate = useNavigate();
+  const [focusedIndex, setFocusedIndex] = useState(0);
 
   useEffect(() => {
-    if (inputRefs.current[0]) {
-      inputRefs.current[0].focus(); // Focus the first input field
+    if (inputRefs.current[focusedIndex]) {
+      inputRefs.current[focusedIndex].focus();
     }
-  }, []);
+  }, [focusedIndex]);
 
-  // Check if all input fields are filled
   const isOtpComplete = (otpArray) => {
-    return otpArray.every((digit) => digit !== ""); // Return true if all fields are filled
+    return otpArray.every((digit) => digit !== "");
   };
 
-  // Handle OTP input and move focus to the next field
   const handleChange = async (e, index) => {
     const value = e.target.value;
 
-    // Only allow numeric input
     if (!/^[0-9]$/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Move focus to the next input field if the current one is filled
     if (index < 5 && value !== "") {
-      inputRefs.current[index + 1].focus();
+      setFocusedIndex(index + 1);
     }
 
-    // Automatically submit if all fields are filled
     if (isOtpComplete(newOtp)) {
-      await handleSubmit(newOtp); // Call submit once OTP is complete
+      await handleSubmit(newOtp);
     }
   };
 
-  // Handle backspace to clear the current field or move focus to the previous field
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
-      // If the current field is not empty, clear it
       if (otp[index] !== "") {
         const newOtp = [...otp];
-        newOtp[index] = ""; // Clear the current input
+        newOtp[index] = "";
         setOtp(newOtp);
-        e.preventDefault(); // Prevent default backspace behavior (e.g., navigating to previous page)
+        e.preventDefault();
       } else if (index > 0) {
-        // Move to the previous input field if the current one is empty
         inputRefs.current[index - 1].focus();
       }
     }
   };
 
-  // Handle OTP verification submission
   const handleSubmit = async (otpArray) => {
-    const otpCode = otpArray.join(""); // Combine OTP digits into one string
+    console.log(otpArray);
+    const otpCode = otpArray.join("");
     try {
-      // Redirect to the "Signing In" page first
-      navigate('/signing-in'); // Redirect to "Signing In" page
+      // Show a message or loader for signing-in indication
+      navigate("/signing-in");
 
-      const response = await axios.post('http://localhost:5000/verify-otp', {
+      const response = await axios.post("http://localhost:5000/verify-otp", {
         phoneNumber: phoneNumber,
         otp: otpCode,
       });
 
       if (response.data.success) {
-        // Handle successful OTP verification
-        console.log('OTP verified successfully!');
-        // Here you can redirect the user to a dashboard or home page after verification
-        setTimeout(() => navigate('/signing-animation-page'), 2000); // Example: redirect to homepage after 2 seconds
+        console.log("OTP verified successfully");
+        // Redirect to the next page if verification is successful
+        navigate("/signing-animation-page");
       } else {
-        // Handle OTP failure (redirect back to OTP page)
-        alert('Invalid OTP!');
-        navigate('/signing-animation-page'); // Bring the user back to OTP input if it fails
+        alert("Invalid OTP!");
+        // Redirect back to the OTP page for retry if verification fails
+        navigate("/otp-page");
       }
     } catch (error) {
-      console.error('Error verifying OTP:', error);
-      navigate('/signing-animation-page'); // In case of an error, redirect back to OTP page
+      console.error("Error verifying OTP:", error);
+      alert("An error occurred while verifying the OTP. Please try again.");
+      // Redirect back to the OTP page for retry
+      navigate("/otp-page");
     }
   };
 
@@ -94,53 +89,104 @@ const OtpPage = () => {
       flexDirection="column"
       alignItems="center"
       justifyContent="center"
-      sx={{ width: '100%', height: '100vh', padding: '0 20px 20px 20px' }}
+      sx={{
+        width: "100%",
+        padding: "32px",
+        backgroundColor: "white",
+        height: "100vh",
+      }}
     >
-      <Box 
-      component="img"
-      src={mobileVerificationIicon}
-      sx={{width:"12%", height: "25%", marginLeft: "20px", marginBottom: "36px"}}
-      ></Box>
       <Typography variant="h5" gutterBottom>
         Enter OTP
       </Typography>
-  
+
       <form onSubmit={(e) => e.preventDefault()}>
-        <Typography variant="body2" gutterBottom sx={{textAlign: "center"}}>
-          Please enter the 6-digit OTP sent to your phone.
-        </Typography>
-        <Grid2 container spacing={2} justifyContent="center" sx={{ marginBottom: '20px' }}>
-          {otp.map((data, index) => (
-            <Grid2 item key={index}>
-              <TextField
-                autoFocus={index === 0}
-                type="text"
-                slotProps={{
-                  input: {
-                    maxLength: 1,
-                    style: { textAlign: 'center' },
-                  },
-                }}
-                value={data}
-                onChange={(e) => handleChange(e, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                inputRef={(el) => (inputRefs.current[index] = el)} // Store reference for each input
-                sx={{ width: 50, fontSize: '24px' }}
-              />
-            </Grid2>
-          ))}
-        </Grid2>
-      </form>
-      <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={!isOtpComplete(otp)} // Disable until OTP is filled
-          sx={{ width: '100%', maxWidth: '200px' }}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
-          Verify OTP
-        </Button>
-    
+          <Typography
+            variant="body2"
+            gutterBottom
+            sx={{
+              textAlign: "center",
+              maxWidth: "50%",
+              marginBottom: "10px",
+              color: "primary.grey",
+            }}
+          >
+            Please enter the 6-digit OTP sent to your phone.
+          </Typography>
+          <Grid2
+            container
+            spacing={2}
+            justifyContent="center"
+            sx={{ marginBottom: "10px", maxWidth: "50%" }}
+          >
+            {otp.map((data, index) => (
+              <Grid2 item key={index}>
+                <TextField
+                  autoFocus={index === 0}
+                  type="text"
+                  slotProps={{
+                    input: {
+                      maxLength: 1,
+                      style: { textAlign: "center" },
+                    },
+                  }}
+                  value={data}
+                  onChange={(e) => handleChange(e, index)}
+                  onKeyDown={(e) => handleKeyDown(e, index)}
+                  inputRef={(el) => (inputRefs.current[index] = el)}
+                  sx={{ width: 50, fontSize: "24px" }}
+                />
+              </Grid2>
+            ))}
+          </Grid2>
+          <VirtualKeyboard
+            inputValue={otp[focusedIndex] || ""}
+            onInputChange={setOtp}
+            width="30%"
+            isOtp={true}
+            focusedIndex={focusedIndex}
+            setFocusedIndex={setFocusedIndex}
+          />
+        </Box>
+      </form>
+      <Typography
+        variant="body2"
+        gutterBottom
+        sx={{
+          textAlign: "center",
+          maxWidth: "50%",
+          marginBottom: "10px",
+          color: "primary.grey",
+        }}
+      >
+        Don't recieve the OTP ?{" "}
+        <Typography
+          sx={{
+            color: "primary.main",
+            display: "inline",
+            textTransform: "uppercase",
+          }}
+        >
+          Resend OTP
+        </Typography>
+      </Typography>
+      <Button
+        onSubmit={handleSubmit}
+        variant="contained"
+        color="primary"
+        disabled={!isOtpComplete(otp)}
+        sx={{ width: "100%", maxWidth: "350px", color: "white" }}
+      >
+        Sign in
+      </Button>
     </Box>
   );
 };

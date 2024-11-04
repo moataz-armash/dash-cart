@@ -4,8 +4,9 @@ import axios from 'axios';
 export const sendOtpApi = async (phoneNumber) => {
   try {
     const response = await axios.post('http://localhost:5000/send-otp', {
-      phoneNumber: "+" + phoneNumber,
+      phoneNumber:  phoneNumber,
     });
+   
     return response.data; // Return response data if needed
   } catch (error) {
     // Log and throw the error to be handled by the component

@@ -7,6 +7,7 @@ const theme = createTheme({
       main: "#89CC00", // Your primary color (light green as seen in the button)
       contrastText: "#000", // Text color for primary (black in this case)
       white: "#ffffff",
+      grey: "#777"
     },
     secondary: {
       main: "#568000", // Your secondary color (e.g., dark grey from the text in the image)

@@ -12,7 +12,8 @@ const StepBox = ({ stepNumber, description }) => {
           borderRadius: "50%",
           border: 3,
           borderColor: "white",
-        }}>
+        }}
+      >
         <Typography
           variant="body1"
           sx={{
@@ -21,7 +22,8 @@ const StepBox = ({ stepNumber, description }) => {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-          }}>
+          }}
+        >
           {stepNumber}
         </Typography>
       </Box>
@@ -30,7 +32,8 @@ const StepBox = ({ stepNumber, description }) => {
         sx={{
           color: "white",
           whiteSpace: "pre-line", // Ensures new lines are rendered
-        }}>
+        }}
+      >
         {description}
       </Typography>
     </Box>

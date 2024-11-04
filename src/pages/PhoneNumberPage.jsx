@@ -1,156 +1,174 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext } from "react";
 import MainCard from "../components/MainCard";
 import SecondaryCard from "../components/SecondaryCard";
-import { Typography, Box, Button, TextField } from "@mui/material";
+import { Typography, Box, Button } from "@mui/material";
 import MainText from "../components/MainText";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
-import { useNavigate, Link } from 'react-router-dom';
-import {sendOtpApi} from "../services/apiService"
+import { useNavigate, Link } from "react-router-dom";
+import { sendOtpApi } from "../services/apiService";
 import { PhoneNumberContext } from "../contexts/PhoneNumberContext";
+import VirtualKeyboard from "../components/VirtualKeyboard";
 
 function PhoneNumberPage() {
   const { phoneNumber, setPhoneNumber } = useContext(PhoneNumberContext);
-  const [error, setError] = useState(''); 
-  const [isPhoneValid, setIsPhoneValid] = useState(true); 
-
+  const [error, setError] = useState("");
+  const [isPhoneValid, setIsPhoneValid] = useState(true);
+  const [showKeyboard, setShowKeyboard] = useState(false);
   const navigate = useNavigate();
 
-  
+  // Update phone number and manage keyboard visibility
   const handlePhoneNumberChange = (value) => {
     setPhoneNumber(value);
-    if (error) setError(''); 
-    setIsPhoneValid(true); 
+    // setShowKeyboard(true);
+    if (error) setError("");
+    setIsPhoneValid(true);
   };
 
   const validatePhoneNumber = () => {
     if (phoneNumber.length < 12) {
-      setError('Please enter a valid phone number');
-      setIsPhoneValid(false); 
+      setError("Please enter a valid phone number");
+      setIsPhoneValid(false);
       return false;
     }
     return true;
   };
 
   // Send OTP via the backend
-    const sendOtp = async () => {
-      if (!validatePhoneNumber()) {
-        return; 
-      }
-      try {
-        const data = await sendOtpApi(phoneNumber);
-        navigate('/otp-page');
-      } catch (error) {
-        console.error('Error sending OTP:', error);
-      }
-      console.log(phoneNumber);
-    };
+  const sendOtp = async () => {
+    if (!validatePhoneNumber()) {
+      return;
+    }
+    try {
+      const data = await sendOtpApi(phoneNumber);
+
+      navigate("/otp-page");
+    } catch (error) {
+      console.log("phoneNumber:" + phoneNumber);
+      console.error("Error sending OTP:", error);
+    }
+  };
 
   return (
     <MainCard backgroundColor="#EEEEEE">
-      <SecondaryCard
-        maxHeight="90%"
-        padding="48px"
-        flexDirection="column"
-        width="70%"
-        backgroundColor="white"
+      <Box
+        sx={{
+          justifyContent: "center",
+          backgroundColor: "white",
+          gap: 1,
+          width: "80%",
+          borderRadius: "21px",
+          border: 1,
+          padding: "16px",
+          borderColor: "#D9D9D9",
+        }}
       >
-        <Box sx={{ marginBottom: "18px" }}>
-          <MainText
-            fontSize="h4"
-            color="#000"
-            text="Login using phone number"
-            fontWeight="600"
-          />
-        </Box>
+        <MainText
+          fontSize="h5"
+          color="#000"
+          text="Login using phone number"
+          fontWeight="500"
+          marginBottom="10"
+          marginTop="20px"
+        />
         <Box
           sx={{
-            justifyContent: "center",
             display: "flex",
-            height: "90%",
-            borderRadius: "21px",
-            border: 2,
-            borderColor: "#D9D9D9",
-            padding: "24px 36px",
+
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            // padding: "12px",
           }}
         >
-          <Box
+          <PhoneInput
+            country={"tr"}
+            value={phoneNumber}
+            onFocus={(e) => {
+              setShowKeyboard(true);
+              // Place the cursor at the end of the input value
+              setTimeout(() => {
+                if (e.target && e.target.setSelectionRange) {
+                  e.target.setSelectionRange(
+                    e.target.value.length,
+                    e.target.value.length
+                  );
+                }
+              }, 0);
+            }}
+            inputProps={{
+              name: "Phone Number",
+              required: true,
+              autoFocus: true,
+            }}
+            containerStyle={{ marginTop: "10px", width: "70%" }}
+            inputStyle={{
+              width: "100%",
+              padding: "20px 60px",
+              fontSize: "24px",
+              fontWeight: "600",
+              color: "#171717",
+              opacity: "70%",
+            }}
+            isValid={isPhoneValid}
+          />
+          {!isPhoneValid && (
+            <Typography
+              variant="body2"
+              sx={{ color: "red", fontWeight: "600" }}
+            >
+              {error}
+            </Typography>
+          )}
+
+          {showKeyboard && (
+            <VirtualKeyboard
+              inputValue={phoneNumber}
+              onInputChange={handlePhoneNumberChange}
+              width="40%"
+            />
+          )}
+
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={sendOtp}
             sx={{
-              display: "flex",
-              gap: 2,
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "80%",
-              paddingTop: "36px",
+              width: "100%",
+              maxWidth: "55%",
+              color: "white",
+              fontSize: "18px",
+              borderRadius: "8px",
+              // marginTop: "24px",
             }}
           >
-           
-            <PhoneInput
-              country={"tr"} // Default country
-              value={phoneNumber}
-              onChange={handlePhoneNumberChange}
-              inputProps={{
-                name: "Phone Number",
-                required: true,
-                autoFocus: true,
-              }}
-              containerStyle={{ marginBottom: "20px", width: "100%" }}
-              inputStyle={{
-                width: "100%",
-                padding: "20px 60px",
-                fontSize: "24px",
-                fontWeight: "600",
-                color: "#171717",
-                opacity: "70%",
-              }}
-              isValid={isPhoneValid}
-            />
-            {!isPhoneValid && (
-              <Typography
-                variant="body2"
-                sx={{ color: "red", fontWeight: "600", marginBottom: "10px" }}
-              >
-                {error}
-              </Typography>
-            )}
-
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={sendOtp}
-              sx={{
-                width: "100%",
-                maxWidth: "300px",
-                color: "white",
-                fontSize: "24px",
-                borderRadius: "16px",
-                marginTop: "24px",
-              }}
-            >
-              Continue
-            </Button>
+            Continue
+          </Button>
+          <Typography
+            variant="body1"
+            sx={{
+              color: "#171717",
+              opacity: "70%",
+              fontWeight: "600",
+              marginTop: "8px",
+            }}
+          >
+            Sign up with{" "}
             <Typography
-              variant="body1"
-              sx={{ color: "#171717", opacity: "70%", fontWeight: "600" }}
+              component={Link}
+              to="/signin-page"
+              sx={{
+                textDecoration: "underline",
+                display: "inline",
+                color: "primary.main",
+                fontWeight: "600",
+              }}
             >
-              Sign up with{" "}
-              <Typography
-                component={Link}
-                to="/signin-page"
-                sx={{
-                  textDecoration: "underline",
-                  display: "inline",
-                  color: "primary.main",
-                  fontWeight: "600",
-                }}
-              >
-                scanning
-              </Typography>
+              scanning
             </Typography>
-          </Box>
+          </Typography>
         </Box>
-      </SecondaryCard>
+      </Box>
     </MainCard>
   );
 }
