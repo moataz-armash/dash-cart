@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { Box, Button, Typography, TextField, Grid2 } from "@mui/material";
+import { Box, Button, Typography, TextField, Grid } from "@mui/material";
 import axios from "axios";
 import { PhoneNumberContext } from "../contexts/PhoneNumberContext";
-import { useNavigate } from "react-router-dom"; // To navigate between pages
-import mobileVerificationIicon from "../assets/mobileVerification-icon.png";
+import { useNavigate } from "react-router-dom";
 import VirtualKeyboard from "../components/VirtualKeyboard";
 
 const OtpPage = () => {
-  const { phoneNumber } = useContext(PhoneNumberContext);
+  const { phoneNumber, sendOtp } = useContext(PhoneNumberContext);
   const [otp, setOtp] = useState(new Array(6).fill(""));
   const inputRefs = useRef([]);
   const navigate = useNavigate();
@@ -19,48 +18,47 @@ const OtpPage = () => {
     }
   }, [focusedIndex]);
 
-  const isOtpComplete = (otpArray) => {
-    return otpArray.every((digit) => digit !== "");
-  };
+  const isOtpComplete = (otpArray) => otpArray.every((digit) => digit !== "");
 
-  const handleChange = async (e, index) => {
-    const value = e.target.value;
-
+  const handleOtpChange = (value, index) => {
     if (!/^[0-9]$/.test(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    if (index < 5 && value !== "") {
+    if (index < otp.length - 1 && value !== "") {
       setFocusedIndex(index + 1);
     }
+  };
 
-    if (isOtpComplete(newOtp)) {
-      await handleSubmit(newOtp);
+  const handleVirtualKeyboardInput = (value) => {
+    handleOtpChange(value, focusedIndex);
+    if (
+      isOtpComplete([
+        ...otp.slice(0, focusedIndex),
+        value,
+        ...otp.slice(focusedIndex + 1),
+      ])
+    ) {
+      handleSubmit();
     }
   };
 
   const handleKeyDown = (e, index) => {
     if (e.key === "Backspace") {
       if (otp[index] !== "") {
-        const newOtp = [...otp];
-        newOtp[index] = "";
-        setOtp(newOtp);
-        e.preventDefault();
+        handleOtpChange("", index);
       } else if (index > 0) {
-        inputRefs.current[index - 1].focus();
+        setFocusedIndex(index - 1);
       }
     }
   };
 
-  const handleSubmit = async (otpArray) => {
-    console.log(otpArray);
-    const otpCode = otpArray.join("");
-    try {
-      // Show a message or loader for signing-in indication
-      navigate("/signing-in");
+  const handleSubmit = async () => {
+    const otpCode = otp.join("");
 
+    try {
       const response = await axios.post("http://localhost:5000/verify-otp", {
         phoneNumber: phoneNumber,
         otp: otpCode,
@@ -68,18 +66,16 @@ const OtpPage = () => {
 
       if (response.data.success) {
         console.log("OTP verified successfully");
-        // Redirect to the next page if verification is successful
         navigate("/signing-animation-page");
       } else {
         alert("Invalid OTP!");
-        // Redirect back to the OTP page for retry if verification fails
-        navigate("/otp-page");
+        setOtp(new Array(6).fill(""));
+        setFocusedIndex(0);
       }
     } catch (error) {
+      navigate("/signing-animation-page");
       console.error("Error verifying OTP:", error);
       alert("An error occurred while verifying the OTP. Please try again.");
-      // Redirect back to the OTP page for retry
-      navigate("/otp-page");
     }
   };
 
@@ -121,39 +117,34 @@ const OtpPage = () => {
           >
             Please enter the 6-digit OTP sent to your phone.
           </Typography>
-          <Grid2
+          <Grid
             container
             spacing={2}
             justifyContent="center"
             sx={{ marginBottom: "10px", maxWidth: "50%" }}
           >
             {otp.map((data, index) => (
-              <Grid2 item key={index}>
+              <Grid item key={index}>
                 <TextField
                   autoFocus={index === 0}
                   type="text"
-                  slotProps={{
-                    input: {
-                      maxLength: 1,
-                      style: { textAlign: "center" },
-                    },
+                  inputProps={{
+                    maxLength: 1,
+                    style: { textAlign: "center" },
                   }}
                   value={data}
-                  onChange={(e) => handleChange(e, index)}
+                  onChange={(e) => handleOtpChange(e.target.value, index)}
                   onKeyDown={(e) => handleKeyDown(e, index)}
                   inputRef={(el) => (inputRefs.current[index] = el)}
                   sx={{ width: 50, fontSize: "24px" }}
                 />
-              </Grid2>
+              </Grid>
             ))}
-          </Grid2>
+          </Grid>
           <VirtualKeyboard
-            inputValue={otp[focusedIndex] || ""}
-            onInputChange={setOtp}
+            onInputChange={handleVirtualKeyboardInput}
             width="30%"
             isOtp={true}
-            focusedIndex={focusedIndex}
-            setFocusedIndex={setFocusedIndex}
           />
         </Box>
       </form>
@@ -167,8 +158,12 @@ const OtpPage = () => {
           color: "primary.grey",
         }}
       >
-        Don't recieve the OTP ?{" "}
+        Didn't receive the OTP?{" "}
         <Typography
+          onClick={() => {
+            sendOtp();
+            window.location.reload(); // This will refresh the page
+          }}
           sx={{
             color: "primary.main",
             display: "inline",
@@ -179,7 +174,7 @@ const OtpPage = () => {
         </Typography>
       </Typography>
       <Button
-        onSubmit={handleSubmit}
+        onClick={handleSubmit}
         variant="contained"
         color="primary"
         disabled={!isOtpComplete(otp)}

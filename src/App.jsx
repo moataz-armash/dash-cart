@@ -13,8 +13,8 @@ import { PhoneNumberProvider } from './contexts/PhoneNumberContext';
 function App() {
   return (
     <div className="App">
-      <PhoneNumberProvider>
       <Router>
+      <PhoneNumberProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/learn-page" element={<LearnPage />} />
@@ -24,8 +24,8 @@ function App() {
           <Route path="/signing-animation-page" element={<SigninAnimationPage />} />
           <Route path="*" element={<NotFoundPage />} /> 404 route
         </Routes>
-      </Router>
       </PhoneNumberProvider>
+      </Router>
     </div>
   );
 }

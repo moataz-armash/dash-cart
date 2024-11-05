@@ -6,13 +6,12 @@ import MainText from "../components/MainText";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
 import { useNavigate, Link } from "react-router-dom";
-import { sendOtpApi } from "../services/apiService";
 import { PhoneNumberContext } from "../contexts/PhoneNumberContext";
 import VirtualKeyboard from "../components/VirtualKeyboard";
 
 function PhoneNumberPage() {
-  const { phoneNumber, setPhoneNumber } = useContext(PhoneNumberContext);
-  const [error, setError] = useState("");
+  const { phoneNumber, setPhoneNumber, error, sendOtp } =
+    useContext(PhoneNumberContext);
   const [isPhoneValid, setIsPhoneValid] = useState(true);
   const [showKeyboard, setShowKeyboard] = useState(false);
   const navigate = useNavigate();
@@ -23,30 +22,6 @@ function PhoneNumberPage() {
     // setShowKeyboard(true);
     if (error) setError("");
     setIsPhoneValid(true);
-  };
-
-  const validatePhoneNumber = () => {
-    if (phoneNumber.length < 12) {
-      setError("Please enter a valid phone number");
-      setIsPhoneValid(false);
-      return false;
-    }
-    return true;
-  };
-
-  // Send OTP via the backend
-  const sendOtp = async () => {
-    if (!validatePhoneNumber()) {
-      return;
-    }
-    try {
-      const data = await sendOtpApi(phoneNumber);
-
-      navigate("/otp-page");
-    } catch (error) {
-      console.log("phoneNumber:" + phoneNumber);
-      console.error("Error sending OTP:", error);
-    }
   };
 
   return (

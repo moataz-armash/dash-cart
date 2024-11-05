@@ -1,54 +1,79 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { Box, Button, Grid } from "@mui/material";
 import BackspaceIcon from "@mui/icons-material/Backspace";
 
-const VirtualKeyboard = ({ inputValue, onInputChange, width, isOtp = false, focusedIndex = 0, setFocusedIndex }) => {
+const VirtualKeyboard = ({
+  inputValue,
+  onInputChange,
+  width,
+  isOtp = false,
+  focusedIndex = 0,
+  setFocusedIndex,
+}) => {
+  const location = useLocation();
+
+  const isOtpMode = location.pathname.includes("otp");
+
   const handleButtonClick = (value) => {
-    if (isOtp) {
-      // Handle input for OTP array
-      onInputChange((prevOtp) => {
-        const newOtp = [...prevOtp];
-        if (focusedIndex >= 0 && focusedIndex < newOtp.length) {
-          newOtp[focusedIndex] = value;
-          setFocusedIndex((prev) => (prev < newOtp.length - 1 ? prev + 1 : prev));
-        }
-        return newOtp;
-      });
+    if (isOtpMode) {
+      onInputChange(value);
     } else {
-      // Handle input for phone number
-      onInputChange((prevValue) => {
-        const countryCode = "+90";
-        if (prevValue.startsWith(countryCode)) {
-          return prevValue + value;
-        } else {
-          return countryCode + prevValue + value;
-        }
-      });
+      if (isOtp) {
+        // Handle input for OTP array
+        onInputChange((prevOtp) => {
+          const newOtp = [...prevOtp];
+          if (focusedIndex >= 0 && focusedIndex < newOtp.length) {
+            newOtp[focusedIndex] = value;
+            setFocusedIndex((prev) =>
+              prev < newOtp.length - 1 ? prev + 1 : prev
+            );
+          }
+          return newOtp;
+        });
+      } else {
+        // Handle input for phone number
+        onInputChange((prevValue) => {
+          const countryCode = "+90";
+          if (prevValue.startsWith(countryCode)) {
+            return prevValue + value;
+          } else {
+            return countryCode + prevValue + value;
+          }
+        });
+      }
     }
   };
 
   const handleBackspace = () => {
-    if (isOtp) {
-      // Handle backspace for OTP array
-      onInputChange((prevOtp) => {
-        const newOtp = [...prevOtp];
-        if (focusedIndex >= 0 && newOtp[focusedIndex] !== "") {
-          newOtp[focusedIndex] = "";
-        } else if (focusedIndex > 0) {
-          newOtp[focusedIndex - 1] = "";
-          setFocusedIndex((prev) => (prev > 0 ? prev - 1 : 0));
-        }
-        return newOtp;
-      });
+    if (isOtpMode) {
+      onInputChange("");
     } else {
-      // Handle backspace for phone number
-      onInputChange((prevValue) => {
-        const countryCode = "+90";
-        if (prevValue.startsWith(countryCode) && prevValue.length > countryCode.length) {
-          return prevValue.slice(0, -1);
-        }
-        return prevValue;
-      });
+      if (isOtp) {
+        // Handle backspace for OTP array
+        onInputChange((prevOtp) => {
+          const newOtp = [...prevOtp];
+          if (focusedIndex >= 0 && newOtp[focusedIndex] !== "") {
+            newOtp[focusedIndex] = "";
+          } else if (focusedIndex > 0) {
+            newOtp[focusedIndex - 1] = "";
+            setFocusedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+          }
+          return newOtp;
+        });
+      } else {
+        // Handle backspace for phone number
+        onInputChange((prevValue) => {
+          const countryCode = "+90";
+          if (
+            prevValue.startsWith(countryCode) &&
+            prevValue.length > countryCode.length
+          ) {
+            return prevValue.slice(0, -1);
+          }
+          return prevValue;
+        });
+      }
     }
   };
 
