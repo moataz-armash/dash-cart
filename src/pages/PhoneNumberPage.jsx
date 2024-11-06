@@ -100,8 +100,8 @@ function PhoneNumberPage() {
             <VirtualKeyboard
               inputValue={phoneNumber}
               onInputChange={handlePhoneNumberChange}
-              width="40%"
-            />
+              width="35%"
+              />
           )}
 
           <Button

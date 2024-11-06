@@ -1,26 +1,31 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useLocation } from "react-router-dom";
 import { Box, Button, Grid } from "@mui/material";
 import BackspaceIcon from "@mui/icons-material/Backspace";
+import { OtpContext } from "../contexts/otpContext";
 
-const VirtualKeyboard = ({
-  inputValue,
-  onInputChange,
-  width,
-  isOtp = false,
-  focusedIndex = 0,
-  setFocusedIndex,
-}) => {
+const VirtualKeyboard = ({ onInputChange, width, isOtp = false }) => {
   const location = useLocation();
+  const {
+    otp,
+    focusedIndex,
+    setOtp,
+    setFocusedIndex,
+    inputRefs,
+    handleOtpChange,
+    handleSubmit,
+    isOtpComplete,
+  } = useContext(OtpContext);
 
   const isOtpMode = location.pathname.includes("otp");
 
   const handleButtonClick = (value) => {
     if (isOtpMode) {
+      // Directly update OTP value in OTP mode
       onInputChange(value);
     } else {
       if (isOtp) {
-        // Handle input for OTP array
+        // Handle input for OTP array in non-URL-based OTP mode
         onInputChange((prevOtp) => {
           const newOtp = [...prevOtp];
           if (focusedIndex >= 0 && focusedIndex < newOtp.length) {
@@ -35,11 +40,9 @@ const VirtualKeyboard = ({
         // Handle input for phone number
         onInputChange((prevValue) => {
           const countryCode = "+90";
-          if (prevValue.startsWith(countryCode)) {
-            return prevValue + value;
-          } else {
-            return countryCode + prevValue + value;
-          }
+          return prevValue.startsWith(countryCode)
+            ? prevValue + value
+            : countryCode + prevValue + value;
         });
       }
     }
@@ -47,17 +50,33 @@ const VirtualKeyboard = ({
 
   const handleBackspace = () => {
     if (isOtpMode) {
-      onInputChange("");
+      console.log(isOtpMode);
+      // Only proceed if focusedIndex is greater than 0
+      if (focusedIndex >= 0) {
+        const newOtp = [...otp];
+
+        // Clear the current field
+        newOtp[focusedIndex] = "";
+
+        // Update the OTP array
+        setOtp(newOtp);
+
+        // Move focus back one field if not at the start
+        const newFocusedIndex = focusedIndex > 0 ? focusedIndex - 1 : 0;
+        setFocusedIndex(newFocusedIndex);
+      }
     } else {
       if (isOtp) {
-        // Handle backspace for OTP array
+        // Handle backspace for OTP array in non-URL-based OTP mode
         onInputChange((prevOtp) => {
           const newOtp = [...prevOtp];
-          if (focusedIndex >= 0 && newOtp[focusedIndex] !== "") {
-            newOtp[focusedIndex] = "";
-          } else if (focusedIndex > 0) {
-            newOtp[focusedIndex - 1] = "";
-            setFocusedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+          if (focusedIndex >= 0 && focusedIndex < newOtp.length) {
+            if (newOtp[focusedIndex] !== "") {
+              newOtp[focusedIndex] = "";
+            } else if (focusedIndex > 0) {
+              newOtp[focusedIndex - 1] = "";
+              setFocusedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+            }
           }
           return newOtp;
         });
